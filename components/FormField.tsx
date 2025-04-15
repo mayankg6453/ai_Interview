@@ -28,14 +28,14 @@ const FormField = ({
 			render={({ field }) => (
 				<FormItem>
 					<FormLabel className="label">{label}</FormLabel>
-					<FormC>
+					<FormControl>
 						<Input
 							className="input"
 							type={type}
 							placeholder={placeholder}
 							{...field}
 						/>
-					</FormC ontrol>
+					</FormControl>
 					<FormMessage />
 				</FormItem>
 			)}
