@@ -1,6 +1,4 @@
----
 
-```markdown
 # 🧠 AI Interview Prep Platform
 
 An intelligent, voice-enabled interview simulation platform built using Next.js. This tool helps users prepare for job interviews by generating realistic AI-powered mock interviews, providing real-time feedback, and offering a seamless user experience across all devices.
