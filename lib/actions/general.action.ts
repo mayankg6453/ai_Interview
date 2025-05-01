@@ -49,10 +49,18 @@ export async function createFeedback(params: CreateFeedbackParams) {
 		const formattedTranscript = transcript
 			.map(
 				(sentence: { role: string; content: string }) =>
-					`- ${sentence.role}:${sentence.content}\n`
+					`- ${sentence.role}: ${sentence.content}\n`
 			)
 			.join("");
-		const { object } = await generateObject({
+		const {
+			object: {
+				totalScore,
+				categoryScores,
+				strengths,
+				areasForImprovement,
+				finalAssessment,
+			},
+		} = await generateObject({
 			model: google("gemini-2.0-flash-001", {
 				structuredOutputs: false,
 			}),
@@ -73,23 +81,23 @@ export async function createFeedback(params: CreateFeedbackParams) {
 				"You are a professional interviewer analyzing a mock interview. Your task is to evaluate the candidate based on structured categories",
 		});
 
-		const feedback = {
+		const feedback = await db.collection("feedback").add({
 			interviewId,
 			userId,
-			totalScore: object.totalScore,
-			categoryScores: object.categoryScores,
-			strengths: object.strengths,
-			areasForImprovement: object.areasForImprovement,
-			finalAssessment: object.finalAssessment,
+			totalScore,
+			categoryScores,
+			strengths,
+			areasForImprovement,
+			finalAssessment,
 			createdAt: new Date().toISOString(),
-		};
+		});
 
 		const newFeedback = await db.collection("feedback").add(feedback);
 
 		return { success: true, feedbackId: newFeedback.id };
 	} catch (error) {
 		console.log("Error saving the feedback", error);
-        return {success:false}
+		return { success: false };
 	}
 }
 export async function getFeedbackByInterviewId(
