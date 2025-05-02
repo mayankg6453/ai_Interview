@@ -92,9 +92,7 @@ export async function createFeedback(params: CreateFeedbackParams) {
 			createdAt: new Date().toISOString(),
 		});
 
-		const newFeedback = await db.collection("feedback").add(feedback);
-
-		return { success: true, feedbackId: newFeedback.id };
+		return { success: true, feedbackId: feedback.id };
 	} catch (error) {
 		console.log("Error saving the feedback", error);
 		return { success: false };

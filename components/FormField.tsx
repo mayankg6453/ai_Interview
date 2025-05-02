@@ -13,6 +13,7 @@ interface FormFieldProps<T extends FieldValues> {
 	label: string;
 	placeholder?: string;
 	type?: "text" | "email" | "password";
+	onChange?: () => void;
 }
 const FormField = ({
 	control,
@@ -20,6 +21,7 @@ const FormField = ({
 	label,
 	placeholder,
 	type = "text",
+	onChange,
 }: FormFieldProps<T>) => {
 	return (
 		<Controller
@@ -34,6 +36,10 @@ const FormField = ({
 							type={type}
 							placeholder={placeholder}
 							{...field}
+							onChange={(e) => {
+								field.onChange(e);
+								onChange?.();
+							}}
 						/>
 					</FormControl>
 					<FormMessage />

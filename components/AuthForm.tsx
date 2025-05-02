@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -31,6 +32,7 @@ const authFormSchema = (type: FormType) => {
 
 const AuthForm = ({ type }: { type: FormType }) => {
 	const router = useRouter();
+	const [errorMessage, setErrorMessage] = useState("");
 	const formSchema = authFormSchema(type);
 	// 1. Define your form.
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -42,9 +44,14 @@ const AuthForm = ({ type }: { type: FormType }) => {
 		},
 	});
 
+	const handleInputChange = () => {
+		setErrorMessage("");
+	};
+
 	// 2. Define a submit handler.
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		try {
+			setErrorMessage(""); // Clear error message before attempting submission
 			if (type === "sign-up") {
 				const { name, email, password } = values;
 
@@ -86,8 +93,18 @@ const AuthForm = ({ type }: { type: FormType }) => {
 				router.push("/");
 			}
 		} catch (error) {
-			console.log(error);
-			toast.error("Something went wrong: " + error);
+			if (error instanceof Error && type === "sign-in") {
+				if (
+					error.message.includes("auth/invalid-credential") ||
+					error.message.includes("auth/wrong-password")
+				) {
+					setErrorMessage("Invalid user ID or password.");
+				} else {
+					toast.error("Something went wrong: " + error.message);
+				}
+			} else {
+				toast.error("An unexpected error occurred.");
+			}
 		}
 	}
 	const isSignIn = type === "sign-in";
@@ -114,12 +131,16 @@ const AuthForm = ({ type }: { type: FormType }) => {
 								placeholder="Your Name"
 							/>
 						)}
+						{errorMessage && (
+							<p className="text-red-500 text-sm">{errorMessage}</p>
+						)}
 						<FormField
 							control={form.control}
 							name="email"
 							label="Email"
 							type="email"
 							placeholder="name@email.com"
+							onChange={handleInputChange}
 						/>
 						<FormField
 							control={form.control}
@@ -127,6 +148,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
 							label="Password"
 							type="password"
 							placeholder="Enter Your Password"
+							onChange={handleInputChange}
 						/>
 						<Button className="btn" type="submit">
 							{isSignIn ? "Sign-In" : "Create an Account"}

@@ -42,7 +42,7 @@ export async function signUp(params: SignUpParams) {
 			success: true,
 			message: "Account created successfully. Please sign in.",
 		};
-	} catch (e: any) {
+	} catch (e: unknown) {
 		console.log("Error creating a user", e);
 
 		if (e.code === "auth/email-already-exists") {
@@ -70,8 +70,8 @@ export async function signIn(params: SignInParams) {
 			};
 
 		await setSessionCookie(idToken);
-	} catch (error: any) {
-		console.log("");
+	} catch (error: unknown) {
+		console.log("Error on user sign-in", error);
 
 		return {
 			success: false,
